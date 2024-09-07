@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
 import { isEmail } from "validator";
 import config from "../config";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
@@ -32,11 +34,42 @@ const SignUp = () => {
       });
   };
 
+  // Estado para controlar o tema atual (claro ou escuro)
+  const [darkMode, setDarkMode] = useState(() => {
+    // Função que carrega o valor do Local Storage ao iniciar
+    const savedTheme = localStorage.getItem("darkMode");
+    return savedTheme ? JSON.parse(savedTheme) : false; // Se houver um tema salvo, usa ele, senão usa o claro
+  });
+
+  // Efeito para aplicar a classe 'dark' no body
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    // Salva o estado atual no localStorage
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  // Função que alterna entre o modo claro e escuro
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
       <div className="max-w-md mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <div className="absolute top-4 right-4">
-          <DarkModeToggle />
+          <DarkModeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        </div>
+        <div className="text-sm text-right">
+          <a
+            href="/login"
+            className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
+          >
+            log in
+          </a>
         </div>
         <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
           Criar Conta

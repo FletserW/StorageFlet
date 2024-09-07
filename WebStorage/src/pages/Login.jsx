@@ -6,8 +6,7 @@ import { Sun, Moon, Github } from "lucide-react";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
 
 const Login = () => {
-
-    // Estados para armazenar o email, senha e mensagens de erro/sucesso
+  // Estados para armazenar o email, senha e mensagens de erro/sucesso
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -18,7 +17,7 @@ const Login = () => {
     const savedTheme = localStorage.getItem("darkMode");
     return savedTheme ? JSON.parse(savedTheme) : false; // Se houver um tema salvo, usa ele, senão usa o claro
   });
-  
+
   // Efeito para aplicar a classe 'dark' no body
   useEffect(() => {
     if (darkMode) {
@@ -28,7 +27,7 @@ const Login = () => {
     }
     // Salva o estado atual no localStorage
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    }, [darkMode]);
+  }, [darkMode]);
 
   // Função que alterna entre o modo claro e escuro
   const toggleDarkMode = () => {
@@ -77,7 +76,7 @@ const Login = () => {
     <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
       {/* Usando o componente de Dark Mode no canto superior direito */}
       <div className="absolute top-4 right-4">
-        <DarkModeToggle />
+        <DarkModeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       </div>
       <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-md">
         <div className="text-sm text-right">
@@ -89,7 +88,7 @@ const Login = () => {
           </a>
         </div>
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
-          Login
+          Acessar
         </h2>
 
         {/* Exibe mensagens de erro/sucesso */}

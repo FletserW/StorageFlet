@@ -52,7 +52,7 @@ public class UserService {
 
     // Método para autenticar o usuário com base no email e senha
     public boolean authenticate(String email, String password) {
-        Optional<UserModel> user = ur.findByEmail(email); // Corrigido "ur" aqui
+        Optional<UserModel> user = ur.findByEmail(email);
         
         if (user.isPresent()) {
             // Verifica se a senha informada corresponde à do banco de dados

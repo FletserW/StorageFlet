@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import DashBoard from "./pages/DashBoard"
+import Stock from "./pages/Stock";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         {/* Definimos a rota para a página de login */}
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<DashBoard/>}/>
+        <Route path="/estoque" element={<Stock/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="signup" element={<SignUp/>}/>
       </Routes>

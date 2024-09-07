@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import Sidebar from "../component/ui/SideBar";
 import DarkModeToggle from "../component/ui/DarkModeToggle";

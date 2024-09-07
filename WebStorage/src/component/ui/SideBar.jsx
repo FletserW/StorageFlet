@@ -7,6 +7,7 @@ import {
   Truck,
   Settings,
   LogOut,
+  ClipboardPenLine
 } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
@@ -25,7 +26,9 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
           <img
             src="logo.png"
             alt="Logo"
-            className={`w-10 h-10 ${isSidebarOpen ? "block" : "hidden md:block"}`}
+            className={`w-10 h-10 ${
+              isSidebarOpen ? "block" : "hidden md:block"
+            }`}
           />
           {isSidebarOpen && (
             <span className="text-lg font-bold ml-2 text-white">
@@ -52,19 +55,29 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
             href="/freezer"
             className="flex items-center text-gray-300 hover:text-white"
           >
-            <Thermometer className="mr-2 text-white" /> {isSidebarOpen && "Freezer"}
+            <Thermometer className="mr-2 text-white" />{" "}
+            {isSidebarOpen && "Freezer"}
+          </a>
+          <a
+            href="/pedidos"
+            className="flex items-center text-gray-300 hover:text-white"
+          >
+            <ClipboardPenLine className="mr-2 text-white" />{" "}
+            {isSidebarOpen && "Pedidos"}
           </a>
           <a
             href="/fornecedores"
             className="flex items-center text-gray-300 hover:text-white"
           >
-            <Truck className="mr-2 text-white" /> {isSidebarOpen && "Fornecedores"}
+            <Truck className="mr-2 text-white" />{" "}
+            {isSidebarOpen && "Fornecedores"}
           </a>
           <a
             href="/configuracoes"
             className="flex items-center text-gray-300 hover:text-white"
           >
-            <Settings className="mr-2 text-white" /> {isSidebarOpen && "Configurações"}
+            <Settings className="mr-2 text-white" />{" "}
+            {isSidebarOpen && "Configurações"}
           </a>
           <a
             href="/login"

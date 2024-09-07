@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import Sidebar from "../component/ui/SideBar";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
-import {Box} from "lucide-react";
+import { Thermometer } from "lucide-react"
 
-function ProductList() {
+function Freezer() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("darkMode");
@@ -45,7 +45,7 @@ function ProductList() {
         <div className={`flex-1 p-4 md:p-8 transition-all duration-300 ${isSidebarOpen ? "ml-14" : "ml-1"} ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
           {/* Header */}
           <header className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold"> <Box className="mr-2 dark:text-white text-gray-700" />Estoque ({products.length})</h1>
+            <h1 className="text-2xl md:text-3xl font-bold"><Thermometer className="mr-2 dark:text-white text-gray-700" />Freezer ({products.length})</h1>
             <DarkModeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
           </header>
 
@@ -93,4 +93,4 @@ function ProductList() {
   );
 }
 
-export default ProductList;
+export default Freezer;

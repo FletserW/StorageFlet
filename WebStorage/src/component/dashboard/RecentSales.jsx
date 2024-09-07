@@ -1,6 +1,6 @@
 export function RecentSales() {
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
       <h2 className="text-lg font-bold mb-4">Recent Sales</h2>
       <ul>
         <li className="flex justify-between mb-3">

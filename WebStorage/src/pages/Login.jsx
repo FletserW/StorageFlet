@@ -76,7 +76,9 @@ const Login = () => {
     <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
       {/* Usando o componente de Dark Mode no canto superior direito */}
       <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4">
         <DarkModeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      </div>
       </div>
       <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-md">
         <div className="text-sm text-right">

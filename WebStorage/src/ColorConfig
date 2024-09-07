@@ -1,0 +1,30 @@
+Padrão de Cores - Modo Light:
+    Background Geral: bg-gray-100 (cinza claro)
+    Texto Geral: text-gray-900 (cinza escuro)
+    Sidebar Background: bg-gray-800 (cinza escuro)
+    Texto do Sidebar:
+        Links não selecionados: text-gray-300 (cinza claro)
+        Links ao passar o mouse: hover:text-white (branco)
+    Botão de Toggle Sidebar:
+        Normal: bg-gray-700 (cinza médio)
+        Hover: hover:bg-gray-600 (cinza mais claro)
+    Conteúdo Principal:
+        Fundo: bg-white (branco)
+        Texto: text-gray-900 (cinza escuro)
+        Texto de Datas (exemplo): text-gray-400 (cinza claro)
+
+
+Padrão de Cores - Modo Dark:
+    Background Geral: bg-gray-900 (cinza muito escuro)
+        Texto Geral: text-white (branco)
+        Sidebar Background: bg-gray-900 (cinza muito escuro)
+    Texto do Sidebar:
+        Links não selecionados: text-gray-300 (cinza claro)
+        Links ao passar o mouse: hover:text-white (branco)
+    Botão de Toggle Sidebar:
+        Normal: bg-gray-800 (cinza muito escuro)
+        Hover: hover:bg-gray-700 (cinza escuro)
+    Conteúdo Principal:
+        Fundo: dark:bg-gray-900 (cinza muito escuro)
+        Texto: dark:text-white (branco)
+        Texto de Datas (exemplo): text-gray-400 (cinza claro)

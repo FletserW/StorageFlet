@@ -14,8 +14,8 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   return (
     <div
       className={`${
-        isSidebarOpen ? "w-64" : "w-16"
-      } bg-gray-800 h-screen p-4 transition-width duration-300 relative dark:bg-gray-900`}
+        isSidebarOpen ? "w-56" : "w-16"
+      } bg-gray-800 h-screen p-4 transition-width duration-300 relative dark:bg-gray-950`}
     >
       {/* Logo and Site Name */}
       <div className="flex items-center mb-8">
@@ -83,3 +83,4 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 }
 
 export default Sidebar;
+  

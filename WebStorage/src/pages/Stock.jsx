@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../component/ui/SideBar";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
+import config from "../config";
 import {Box} from "lucide-react";
 
 function ProductList() {
@@ -10,6 +11,19 @@ function ProductList() {
     const savedTheme = localStorage.getItem("darkMode");
     return savedTheme ? JSON.parse(savedTheme) : false;
   });
+  
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}products/stocks/products`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched data:", data); // Adicione este log
+        setProducts(data);
+      })
+      .catch(error => console.error("Error fetching data:", error));
+  }, []);
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -19,21 +33,6 @@ function ProductList() {
     setDarkMode(!darkMode);
     localStorage.setItem("darkMode", JSON.stringify(!darkMode));
   };
-
-  const products = [
-    { name: "Itaipava 600ml", company: "Itaipava", selling_price: "$7,80", price: "$110", amount: "12" },
-    { name: "Skol 350ml", company: "Skol", selling_price: "$4,50", price: "$60", amount: "24" },
-    { name: "Brahma 500ml", company: "Brahma", selling_price: "$6,20", price: "$85", amount: "18" },
-    { name: "Antarctica 600ml", company: "Antarctica", selling_price: "$7,00", price: "$95", amount: "15" },
-    { name: "Budweiser 330ml", company: "Budweiser", selling_price: "$5,00", price: "$70", amount: "20" },
-    { name: "Itaipava 600ml", company: "Itaipava", selling_price: "$7,80", price: "$110", amount: "12" },
-    { name: "Skol 350ml", company: "Skol", selling_price: "$4,50", price: "$60", amount: "24" },
-    { name: "Brahma 500ml", company: "Brahma", selling_price: "$6,20", price: "$85", amount: "18" },
-    { name: "Antarctica 600ml", company: "Antarctica", selling_price: "$7,00", price: "$95", amount: "15" },
-    { name: "Budweiser 330ml", company: "Budweiser", selling_price: "$5,00", price: "$70", amount: "20" }
-    // Adicione mais produtos aqui para testar o scroll
-    // Adicione mais produtos aqui para testar o scroll
-  ];
 
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
@@ -45,7 +44,10 @@ function ProductList() {
         <div className={`flex-1 p-4 md:p-8 transition-all duration-300 ${isSidebarOpen ? "ml-14" : "ml-1"} ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
           {/* Header */}
           <header className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold"> <Box className="mr-2 dark:text-white text-gray-700" />Estoque ({products.length})</h1>
+            <h1 className="text-2xl md:text-3xl font-bold"> 
+              <Box className="mr-2 dark:text-white text-gray-700" />
+              Estoque ({products.length})
+            </h1>
             <DarkModeToggle darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
           </header>
 
@@ -77,8 +79,8 @@ function ProductList() {
                 {products.map((product, index) => (
                   <tr key={index} className={darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}>
                     <td className="border-b p-2">{product.name}</td>
-                    <td className="border-b p-2">{product.company}</td>
-                    <td className="border-b p-2">{product.selling_price}</td>
+                    <td className="border-b p-2">{product.enterprise}</td>
+                    <td className="border-b p-2">{product.sellingPrice}</td>
                     <td className="border-b p-2">{product.price}</td>
                     <td className="border-b p-2">{product.amount}</td>
                   </tr>

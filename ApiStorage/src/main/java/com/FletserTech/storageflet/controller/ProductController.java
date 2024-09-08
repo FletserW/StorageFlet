@@ -8,7 +8,6 @@ import com.FletserTech.storageflet.models.SupplierModel;
 import com.FletserTech.storageflet.service.ProductService;
 import com.FletserTech.storageflet.service.StockService;
 import com.FletserTech.storageflet.service.SupplierService;
-import com.FletserTech.storageflet.repository.StockRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

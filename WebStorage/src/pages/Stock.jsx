@@ -5,6 +5,7 @@ import DarkModeToggle from "../component/ui/DarkModeToggle";
 import config from "../config";
 import { Box } from "lucide-react";
 import ProductForm from "../component/ui/ProductForms";
+import ProductTable from "../component/ui/ProductTable"; // Importando o componente da tabela
 
 function ProductList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -13,7 +14,8 @@ function ProductList() {
     return savedTheme ? JSON.parse(savedTheme) : false;
   });
   const [products, setProducts] = useState([]);
-  const [isProductFormOpen, setIsProductFormOpen] = useState(false); // Estado para o modal
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para a barra de pesquisa
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}products/stocks/products`)
@@ -42,6 +44,11 @@ function ProductList() {
     setIsProductFormOpen(false); // Fechar o formulário
   };
 
+  // Função para filtrar produtos com base no termo de pesquisa
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
       <div
@@ -62,7 +69,7 @@ function ProductList() {
           <header className="flex flex-col md:flex-row justify-between items-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold">
               <Box className="mr-2 dark:text-white text-gray-700" />
-              Estoque ({products.length})
+              Estoque ({filteredProducts.length})
             </h1>
             <DarkModeToggle
               darkMode={darkMode}
@@ -75,6 +82,8 @@ function ProductList() {
             <input
               type="text"
               placeholder="Pesquisar produtos..."
+              value={searchTerm} // Vínculo com o estado de pesquisa
+              onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado ao digitar
               className={`p-2 border rounded-md w-full max-w-md ${
                 darkMode
                   ? "bg-gray-800 text-white border-gray-600"
@@ -89,78 +98,9 @@ function ProductList() {
             </button>
           </div>
 
-          {/* Scrollable Product Table */}
-          <div className="overflow-y-auto max-h-96">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr>
-                  <th
-                    className={`border-b p-2 ${
-                      darkMode
-                        ? "text-gray-300 border-gray-700"
-                        : "text-gray-600 border-gray-300"
-                    }`}
-                  >
-                    Nome
-                  </th>
-                  <th
-                    className={`border-b p-2 ${
-                      darkMode
-                        ? "text-gray-300 border-gray-700"
-                        : "text-gray-600 border-gray-300"
-                    }`}
-                  >
-                    Empresa
-                  </th>
-                  <th
-                    className={`border-b p-2 ${
-                      darkMode
-                        ? "text-gray-300 border-gray-700"
-                        : "text-gray-600 border-gray-300"
-                    }`}
-                  >
-                    Valor (Venda)
-                  </th>
-                  <th
-                    className={`border-b p-2 ${
-                      darkMode
-                        ? "text-gray-300 border-gray-700"
-                        : "text-gray-600 border-gray-300"
-                    }`}
-                  >
-                    Preço
-                  </th>
-                  <th
-                    className={`border-b p-2 ${
-                      darkMode
-                        ? "text-gray-300 border-gray-700"
-                        : "text-gray-600 border-gray-300"
-                    }`}
-                  >
-                    Qtd
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product, index) => (
-                  <tr
-                    key={index}
-                    className={
-                      darkMode
-                        ? "bg-gray-800 text-white"
-                        : "bg-white text-gray-900"
-                    }
-                  >
-                    <td className="border-b p-2">{product.name}</td>
-                    <td className="border-b p-2">{product.enterprise}</td>
-                    <td className="border-b p-2">{product.sellingPrice}</td>
-                    <td className="border-b p-2">{product.price}</td>
-                    <td className="border-b p-2">{product.amount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Tabela de Produtos usando o componente ProductTable */}
+          <ProductTable products={filteredProducts} darkMode={darkMode} />
+
           <div className="flex mt-3 justify-end">
             <button className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 px-4 py-2 rounded-md">
               Gerenciar
@@ -173,7 +113,7 @@ function ProductList() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg">
               <button
-                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-4xl" 
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-4xl"
                 onClick={handleCloseModal}
               >
                 &times;

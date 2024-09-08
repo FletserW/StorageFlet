@@ -14,7 +14,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "stock", uniqueConstraints = @UniqueConstraint(columnNames = "id_product"))
+@Table(name = "stock",
+       uniqueConstraints = @UniqueConstraint(columnNames = "product_id")) // Define a coluna única
 @Getter
 @Setter
 public class StockModel {
@@ -25,7 +26,7 @@ public class StockModel {
 
     @NotNull(message = "Product ID is required")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductModel product;
 
     @NotNull(message = "Amount is required")

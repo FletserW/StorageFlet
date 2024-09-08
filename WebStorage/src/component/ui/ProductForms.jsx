@@ -3,19 +3,19 @@ import config from "../../config";
 
 function ProductForm() {
   const [formData, setFormData] = useState({
-    nome: "",
-    fornecedor: "",
-    preco: "",
-    valorVenda: "",
-    quantidade: "",
+    name: "",
+    supplierId: "",
+    price: "",
+    sellingPrice: "",
+    amount: "",
   });
 
-  const [fornecedores, setFornecedores] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}suppliers/list`)
       .then((response) => response.json())
-      .then((data) => setFornecedores(data))
+      .then((data) => setSuppliers(data))
       .catch((error) => console.error("Erro ao buscar fornecedores:", error));
   }, []);
 
@@ -30,8 +30,47 @@ function ProductForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Aqui você pode enviar os dados para o backend ou realizar qualquer outra ação
-    console.log(formData);
+    // Verificar se os valores não são nulos
+    if (!formData.name || !formData.supplierId) {
+      console.error("Nome do produto e fornecedor são obrigatórios.");
+      return;
+    }
+
+    const requestBody = {
+      name: formData.name,
+      supplierId: parseInt(formData.supplierId, 10), // Certifique-se de que é um número
+      price: parseFloat(formData.price),
+      sellingPrice: parseFloat(formData.sellingPrice),
+      amount: parseInt(formData.amount, 10),
+    };
+
+    console.log("Enviando dados:", requestBody);
+
+    fetch(`${config.apiBaseUrl}products/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro ao salvar produto');
+      })
+      .then((data) => {
+        console.log("Produto salvo com sucesso:", data);
+        // Fechar o modal ou limpar o formulário
+        setFormData({
+          name: "",
+          supplierId: "",
+          price: "",
+          sellingPrice: "",
+          amount: "",
+        });
+      })
+      .catch((error) => console.error("Erro ao salvar produto:", error));
   };
 
   return (
@@ -44,17 +83,17 @@ function ProductForm() {
         {/* Nome do Produto */}
         <div>
           <label
-            htmlFor="nome"
+            htmlFor="name"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Nome do Produto
           </label>
           <input
             type="text"
-            id="nome"
-            name="nome"
+            id="name"
+            name="name"
             placeholder="Nome do produto"
-            value={formData.nome}
+            value={formData.name}
             onChange={handleInputChange}
             required
             className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
@@ -64,44 +103,45 @@ function ProductForm() {
         {/* Fornecedor */}
         <div>
           <label
-            htmlFor="fornecedor"
+            htmlFor="supplierId"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Fornecedor
           </label>
           <select
-            id="fornecedor"
-            name="fornecedor"
-            value={formData.fornecedor}
+            id="supplierId"
+            name="supplierId"
+            value={formData.supplierId}
             onChange={handleInputChange}
             required
             className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Selecione o fornecedor</option>
-            {fornecedores.map((fornecedor) => (
-              <option key={fornecedor.id} value={fornecedor.id}>
-                {fornecedor.enterprise}
+            {suppliers.map((supplier) => (
+              <option key={supplier.id} value={supplier.id}>
+                {supplier.enterprise}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Preço */}
+        {/* Preço de Compra */}
         <div>
           <label
-            htmlFor="preco"
+            htmlFor="price"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Preço
           </label>
           <input
             type="number"
-            id="preco"
-            name="preco"
+            id="price"
+            name="price"
             placeholder="Preço de compra"
-            value={formData.preco}
+            value={formData.price}
             onChange={handleInputChange}
             required
+            step="0.01"
             className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -109,19 +149,20 @@ function ProductForm() {
         {/* Valor de Venda */}
         <div>
           <label
-            htmlFor="valorVenda"
+            htmlFor="sellingPrice"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Valor de Venda
           </label>
           <input
             type="number"
-            id="valorVenda"
-            name="valorVenda"
-            placeholder="Preço de venda(unidade)"
-            value={formData.valorVenda}
+            id="sellingPrice"
+            name="sellingPrice"
+            placeholder="Preço de venda (unidade)"
+            value={formData.sellingPrice}
             onChange={handleInputChange}
             required
+            step="0.01"
             className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -129,17 +170,17 @@ function ProductForm() {
         {/* Quantidade */}
         <div>
           <label
-            htmlFor="quantidade"
+            htmlFor="amount"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Quantidade (no pacote)
           </label>
           <input
             type="number"
-            id="quantidade"
-            name="quantidade"
+            id="amount"
+            name="amount"
             placeholder="Quantidade de produtos no pacote"
-            value={formData.quantidade}
+            value={formData.amount}
             onChange={handleInputChange}
             required
             className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"

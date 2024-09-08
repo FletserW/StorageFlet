@@ -18,7 +18,7 @@ function ProductList() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para a barra de pesquisa
 
   useEffect(() => {
-    fetch(`${config.apiBaseUrl}products/stocks/products`)
+    fetch(`${config.apiBaseUrl}products/stocks`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched data:", data);
@@ -67,9 +67,10 @@ function ProductList() {
         >
           {/* Header */}
           <header className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold">
-              <Box className="mr-2 dark:text-white text-gray-700" />
-              Estoque ({filteredProducts.length})
+            <h1 className="text-xl md:text-3xl font-bold">
+              <Box className="inline-block mr-2 dark:text-white text-gray-700" />
+              Estoque{" "}
+              {filteredProducts.length ? `(${filteredProducts.length})` : "(0)"}
             </h1>
             <DarkModeToggle
               darkMode={darkMode}

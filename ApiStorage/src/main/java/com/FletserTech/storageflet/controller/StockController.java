@@ -1,11 +1,9 @@
 package com.FletserTech.storageflet.controller;
 
-import com.FletserTech.storageflet.dto.ProductStockDTO;
 import com.FletserTech.storageflet.dto.StockDTO;
 import com.FletserTech.storageflet.models.ProductModel;
 import com.FletserTech.storageflet.models.StockModel;
 import com.FletserTech.storageflet.repository.ProductRepository;
-import com.FletserTech.storageflet.repository.StockRepository;
 import com.FletserTech.storageflet.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +26,10 @@ public class StockController {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private StockRepository stockRepository;
-
     @GetMapping("/list")
-    @Operation(summary = "Rota responsável por listar podutos em estoque ")
+    @Operation(summary = "Rota responsável por listar produtos em estoque")
     public List<StockDTO> getAllStocks() {
-        List<StockModel> stocks = stockService.findAll();
-        return stocks.stream().map(stock -> {
+        return stockService.findAll().stream().map(stock -> {
             StockDTO dto = new StockDTO();
             dto.setId(stock.getId());
             dto.setProductId(stock.getProduct().getId()); // Passa apenas o ID do produto
@@ -44,69 +38,65 @@ public class StockController {
         }).collect(Collectors.toList());
     }
 
-
     @GetMapping("/{id}")
-    @Operation(summary = "Rota responsável por buscar podutos em estoque ")
-    public ResponseEntity<StockModel> getStockById(@PathVariable Long id) {
+    @Operation(summary = "Rota responsável por buscar produto em estoque por ID")
+    public ResponseEntity<StockDTO> getStockById(@PathVariable Long id) {
         Optional<StockModel> stock = stockService.findById(id);
-        return stock.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return stock.map(s -> {
+            StockDTO dto = new StockDTO();
+            dto.setId(s.getId());
+            dto.setProductId(s.getProduct().getId());
+            dto.setAmount(s.getAmount());
+            return ResponseEntity.ok(dto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Rota responsável por registrar podutos em estoque ")
-    public ResponseEntity<StockModel> createStock(@RequestBody Map<String, Object> stockData) {
-        // Recupera o productId e amount do JSON
-        Long productId = Long.parseLong(stockData.get("productId").toString());
-        Integer amount = Integer.parseInt(stockData.get("amount").toString());
+    @Operation(summary = "Rota responsável por registrar produtos em estoque")
+    public ResponseEntity<StockDTO> createStock(@RequestBody StockDTO stockDTO) {
+        ProductModel product = productRepository.findById(stockDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Carrega o produto do banco de dados
-        ProductModel product = productRepository.findById(productId)
-                            .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        // Cria um novo StockModel e define os valores
         StockModel stockModel = new StockModel();
         stockModel.setProduct(product);
-        stockModel.setAmount(amount);
+        stockModel.setAmount(stockDTO.getAmount());
 
-        // Salva o estoque
         StockModel savedStock = stockService.save(stockModel);
 
-        return ResponseEntity.ok(savedStock);
-    }
+        StockDTO responseDTO = new StockDTO();
+        responseDTO.setId(savedStock.getId());
+        responseDTO.setProductId(savedStock.getProduct().getId());
+        responseDTO.setAmount(savedStock.getAmount());
 
-    @GetMapping("/products")
-    @Operation(summary = "Rota responsável por retornas produtos para tabela")
-    public ResponseEntity<List<ProductStockDTO>> getProductStock() {
-        List<ProductStockDTO> productStockList = stockRepository.findAll().stream().map(stock -> {
-            ProductStockDTO dto = new ProductStockDTO();
-            dto.setName(stock.getProduct().getName());
-            dto.setPrice(stock.getProduct().getPrice());
-            dto.setSellingPrice(stock.getProduct().getSellingPrice());
-            dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise());
-            dto.setAmount(stock.getAmount());
-            return dto;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(productStockList);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/change/{id}")
-    @Operation(summary = "Rota responsável por auterar podutos em estoque ")
-    public ResponseEntity<StockModel> updateStock(@PathVariable Long id, @RequestBody StockModel stockDetails) {
+    @Operation(summary = "Rota responsável por alterar um produto em estoque")
+    public ResponseEntity<StockDTO> updateStock(@PathVariable Long id, @RequestBody StockDTO stockDTO) {
         Optional<StockModel> stock = stockService.findById(id);
         if (stock.isPresent()) {
             StockModel updatedStock = stock.get();
-            updatedStock.setProduct(stockDetails.getProduct());
-            updatedStock.setAmount(stockDetails.getAmount());
-            return ResponseEntity.ok(stockService.save(updatedStock));
+            ProductModel product = productRepository.findById(stockDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            updatedStock.setProduct(product);
+            updatedStock.setAmount(stockDTO.getAmount());
+
+            StockModel savedStock = stockService.save(updatedStock);
+
+            StockDTO responseDTO = new StockDTO();
+            responseDTO.setId(savedStock.getId());
+            responseDTO.setProductId(savedStock.getProduct().getId());
+            responseDTO.setAmount(savedStock.getAmount());
+
+            return ResponseEntity.ok(responseDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/remove/{id}")
-    @Operation(summary = "Rota responsável por remover podutos em estoque ")
+    @Operation(summary = "Rota responsável por remover um produto em estoque")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
         if (stockService.findById(id).isPresent()) {
             stockService.deleteById(id);

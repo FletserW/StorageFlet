@@ -1,9 +1,14 @@
 package com.FletserTech.storageflet.controller;
 
+import com.FletserTech.storageflet.dto.ProductDTO;
 import com.FletserTech.storageflet.dto.ProductStockDTO;
 import com.FletserTech.storageflet.models.ProductModel;
+import com.FletserTech.storageflet.models.StockModel;
+import com.FletserTech.storageflet.models.SupplierModel;
 import com.FletserTech.storageflet.service.ProductService;
-import com.FletserTech.storageflet.repository.StockRepository; // Importe o StockRepository
+import com.FletserTech.storageflet.service.StockService;
+import com.FletserTech.storageflet.service.SupplierService;
+import com.FletserTech.storageflet.repository.StockRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,31 +27,131 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    private StockRepository stockRepository; // Adicione a injeção do StockRepository
+    private SupplierService supplierService;
+
+    @Autowired
+    private StockService stockService;
 
     @GetMapping("/list")
-    @Operation(summary = "Rota responsável por listar produtos ")
-    public List<ProductModel> getAllProducts() {
-        return productService.findAll();
+    @Operation(summary = "Rota responsável por listar produtos")
+    public List<ProductDTO> getAllProducts() {
+        return productService.findAll().stream().map(product -> {
+            ProductDTO dto = new ProductDTO();
+            dto.setId(product.getId());
+            dto.setName(product.getName());
+            dto.setAmount(product.getAmount());
+            dto.setPrice(product.getPrice());
+            dto.setSellingPrice(product.getSellingPrice());
+            dto.setSupplierId(product.getSupplier().getId()); // Adiciona o ID do fornecedor
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Rota responsável por buscar produtos")
-    public ResponseEntity<ProductModel> getProductById(@PathVariable Long id) {
+    @Operation(summary = "Rota responsável por buscar produto por ID")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         Optional<ProductModel> product = productService.findById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return product.map(p -> {
+            ProductDTO dto = new ProductDTO();
+            dto.setId(p.getId());
+            dto.setName(p.getName());
+            dto.setAmount(p.getAmount());
+            dto.setPrice(p.getPrice());
+            dto.setSellingPrice(p.getSellingPrice());
+            dto.setSupplierId(p.getSupplier().getId());
+            return ResponseEntity.ok(dto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Rota responsável por registrar produto")
-    public ProductModel createProduct(@RequestBody ProductModel product) {
-        return productService.save(product);
+    @Operation(summary = "Rota responsável por registrar um novo produto(adicioner ao stock)")
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+        ProductModel product = new ProductModel();
+        product.setName(productDTO.getName());
+        product.setAmount(productDTO.getAmount());
+        product.setPrice(productDTO.getPrice());
+        product.setSellingPrice(productDTO.getSellingPrice());
+
+        // Configura o fornecedor
+        if (productDTO.getSupplierId() != null) {
+            Optional<SupplierModel> supplier = supplierService.findById(productDTO.getSupplierId());
+            if (supplier.isPresent()) {
+                product.setSupplier(supplier.get());
+            } else {
+                return ResponseEntity.badRequest().body(null); // Ou outra forma de indicar erro
+            }
+        } else {
+            return ResponseEntity.badRequest().body(null); // Ou outra forma de indicar erro
+        }
+
+        // Salva o produto no banco
+        ProductModel savedProduct = productService.save(product);
+
+        // Cria um registro de estoque com quantidade 0 para o produto recém-criado
+        StockModel stock = new StockModel();
+        stock.setProduct(savedProduct);
+        stock.setAmount(0);  // Define a quantidade inicial como 0
+
+        // Salva o estoque no banco
+        stockService.save(stock);
+
+        // Prepara o DTO de resposta
+        ProductDTO responseDTO = new ProductDTO();
+        responseDTO.setId(savedProduct.getId());
+        responseDTO.setName(savedProduct.getName());
+        responseDTO.setAmount(savedProduct.getAmount());
+        responseDTO.setPrice(savedProduct.getPrice());
+        responseDTO.setSellingPrice(savedProduct.getSellingPrice());
+        responseDTO.setSupplierId(savedProduct.getSupplier().getId());
+
+        return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/stocks/products")
+
+    @PutMapping("/change/{id}")
+    @Operation(summary = "Rota responsável por alterar um produto")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        Optional<ProductModel> product = productService.findById(id);
+        if (product.isPresent()) {
+            ProductModel updatedProduct = product.get();
+            updatedProduct.setName(productDTO.getName());
+            updatedProduct.setAmount(productDTO.getAmount());
+            updatedProduct.setPrice(productDTO.getPrice());
+            updatedProduct.setSellingPrice(productDTO.getSellingPrice());
+            // Atualiza o fornecedor se necessário
+            // updatedProduct.setSupplier(...);
+
+            ProductModel savedProduct = productService.save(updatedProduct);
+
+            ProductDTO responseDTO = new ProductDTO();
+            responseDTO.setId(savedProduct.getId());
+            responseDTO.setName(savedProduct.getName());
+            responseDTO.setAmount(savedProduct.getAmount());
+            responseDTO.setPrice(savedProduct.getPrice());
+            responseDTO.setSellingPrice(savedProduct.getSellingPrice());
+            responseDTO.setSupplierId(savedProduct.getSupplier().getId());
+
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/remove/{id}")
+    @Operation(summary = "Rota responsável por remover um produto")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        if (productService.findById(id).isPresent()) {
+            productService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/stocks")
+    @Operation(summary = "Rota responsável por listar produtos com estoque")
     public ResponseEntity<List<ProductStockDTO>> getProductStock() {
-        List<ProductStockDTO> productStockList = stockRepository.findAll().stream().map(stock -> {
+        List<ProductStockDTO> productStockList = stockService.findAll().stream().map(stock -> {
             ProductStockDTO dto = new ProductStockDTO();
             dto.setName(stock.getProduct().getName());
             dto.setPrice(stock.getProduct().getPrice());
@@ -57,34 +162,6 @@ public class ProductController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(productStockList);
-    }
-
-    @PutMapping("/change/{id}")
-    @Operation(summary = "Rota responsável por alterar produto")
-    public ResponseEntity<ProductModel> updateProduct(@PathVariable Long id, @RequestBody ProductModel productDetails) {
-        Optional<ProductModel> product = productService.findById(id);
-        if (product.isPresent()) {
-            ProductModel updatedProduct = product.get();
-            updatedProduct.setName(productDetails.getName());
-            updatedProduct.setAmount(productDetails.getAmount());
-            updatedProduct.setPrice(productDetails.getPrice());
-            updatedProduct.setSellingPrice(productDetails.getSellingPrice());
-            updatedProduct.setSupplier(productDetails.getSupplier());
-            return ResponseEntity.ok(productService.save(updatedProduct));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/remove/{id}")
-    @Operation(summary = "Rota responsável por remover produto")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        if (productService.findById(id).isPresent()) {
-            productService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping("/")

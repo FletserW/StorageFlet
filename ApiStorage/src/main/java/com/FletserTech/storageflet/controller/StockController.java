@@ -32,19 +32,21 @@ public class StockController {
     private StockRepository stockRepository;
 
     @GetMapping("/list")
-public List<StockDTO> getAllStocks() {
-    List<StockModel> stocks = stockService.findAll();
-    return stocks.stream().map(stock -> {
-        StockDTO dto = new StockDTO();
-        dto.setId(stock.getId());
-        dto.setProductId(stock.getProduct().getId()); // Passa apenas o ID do produto
-        dto.setAmount(stock.getAmount());
-        return dto;
-    }).collect(Collectors.toList());
-}
+    @Operation(summary = "Rota responsável por listar podutos em estoque ")
+    public List<StockDTO> getAllStocks() {
+        List<StockModel> stocks = stockService.findAll();
+        return stocks.stream().map(stock -> {
+            StockDTO dto = new StockDTO();
+            dto.setId(stock.getId());
+            dto.setProductId(stock.getProduct().getId()); // Passa apenas o ID do produto
+            dto.setAmount(stock.getAmount());
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
 
     @GetMapping("/{id}")
+    @Operation(summary = "Rota responsável por buscar podutos em estoque ")
     public ResponseEntity<StockModel> getStockById(@PathVariable Long id) {
         Optional<StockModel> stock = stockService.findById(id);
         return stock.map(ResponseEntity::ok)
@@ -52,6 +54,7 @@ public List<StockDTO> getAllStocks() {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Rota responsável por registrar podutos em estoque ")
     public ResponseEntity<StockModel> createStock(@RequestBody Map<String, Object> stockData) {
         // Recupera o productId e amount do JSON
         Long productId = Long.parseLong(stockData.get("productId").toString());
@@ -73,24 +76,23 @@ public List<StockDTO> getAllStocks() {
     }
 
     @GetMapping("/products")
-public ResponseEntity<List<ProductStockDTO>> getProductStock() {
-    List<ProductStockDTO> productStockList = stockRepository.findAll().stream().map(stock -> {
-        ProductStockDTO dto = new ProductStockDTO();
-        dto.setName(stock.getProduct().getName());
-        dto.setPrice(stock.getProduct().getPrice());
-        dto.setSellingPrice(stock.getProduct().getSellingPrice());
-        dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise());
-        dto.setAmount(stock.getAmount());
-        return dto;
-    }).collect(Collectors.toList());
+    @Operation(summary = "Rota responsável por retornas produtos para tabela")
+    public ResponseEntity<List<ProductStockDTO>> getProductStock() {
+        List<ProductStockDTO> productStockList = stockRepository.findAll().stream().map(stock -> {
+            ProductStockDTO dto = new ProductStockDTO();
+            dto.setName(stock.getProduct().getName());
+            dto.setPrice(stock.getProduct().getPrice());
+            dto.setSellingPrice(stock.getProduct().getSellingPrice());
+            dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise());
+            dto.setAmount(stock.getAmount());
+            return dto;
+        }).collect(Collectors.toList());
 
-    return ResponseEntity.ok(productStockList);
-}
-
-
-
+        return ResponseEntity.ok(productStockList);
+    }
 
     @PutMapping("/change/{id}")
+    @Operation(summary = "Rota responsável por auterar podutos em estoque ")
     public ResponseEntity<StockModel> updateStock(@PathVariable Long id, @RequestBody StockModel stockDetails) {
         Optional<StockModel> stock = stockService.findById(id);
         if (stock.isPresent()) {
@@ -104,6 +106,7 @@ public ResponseEntity<List<ProductStockDTO>> getProductStock() {
     }
 
     @DeleteMapping("/remove/{id}")
+    @Operation(summary = "Rota responsável por remover podutos em estoque ")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
         if (stockService.findById(id).isPresent()) {
             stockService.deleteById(id);

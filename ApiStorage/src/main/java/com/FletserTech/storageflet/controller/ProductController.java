@@ -90,7 +90,7 @@ public class ProductController {
         // Cria um registro de estoque com quantidade 0 para o produto recém-criado
         StockModel stock = new StockModel();
         stock.setProduct(savedProduct);
-        stock.setAmount(0);  // Define a quantidade inicial como 0
+        stock.setQuantity(0);  // Define a quantidade inicial como 0
 
         // Salva o estoque no banco
         stockService.save(stock);
@@ -153,16 +153,19 @@ public class ProductController {
     public ResponseEntity<List<ProductStockDTO>> getProductStock() {
         List<ProductStockDTO> productStockList = stockService.findAll().stream().map(stock -> {
             ProductStockDTO dto = new ProductStockDTO();
-            dto.setName(stock.getProduct().getName());
-            dto.setPrice(stock.getProduct().getPrice());
-            dto.setSellingPrice(stock.getProduct().getSellingPrice());
-            dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise());
-            dto.setAmount(stock.getAmount());
+            dto.setId(stock.getProduct().getId()); // ID do produto
+            dto.setName(stock.getProduct().getName()); // Nome do produto
+            dto.setPrice(stock.getProduct().getPrice()); // Preço do produto
+            dto.setSellingPrice(stock.getProduct().getSellingPrice()); // Preço de venda do produto
+            dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise()); // Empresa fornecedora
+            dto.setQuantity(stock.getQuantity()); // Quantidade em estoque
+            dto.setAmount(stock.getProduct().getAmount()); // Quantidade total do produto
             return dto;
         }).collect(Collectors.toList());
-
+    
         return ResponseEntity.ok(productStockList);
     }
+    
 
     @GetMapping("/")
     @Operation(summary = "Rota responsável pelo teste de conexão")

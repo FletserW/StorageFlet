@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,8 @@ public class StockController {
         return stockService.findAll().stream().map(stock -> {
             StockDTO dto = new StockDTO();
             dto.setId(stock.getId());
-            dto.setProductId(stock.getProduct().getId()); // Passa apenas o ID do produto
-            dto.setAmount(stock.getAmount());
+            dto.setProductId(stock.getProduct().getId());
+            dto.setQuantity(stock.getQuantity()); // Mudei para quantity
             return dto;
         }).collect(Collectors.toList());
     }
@@ -46,7 +45,7 @@ public class StockController {
             StockDTO dto = new StockDTO();
             dto.setId(s.getId());
             dto.setProductId(s.getProduct().getId());
-            dto.setAmount(s.getAmount());
+            dto.setQuantity(s.getQuantity()); // Mudei para quantity
             return ResponseEntity.ok(dto);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -59,14 +58,14 @@ public class StockController {
 
         StockModel stockModel = new StockModel();
         stockModel.setProduct(product);
-        stockModel.setAmount(stockDTO.getAmount());
+        stockModel.setQuantity(stockDTO.getQuantity()); // Mudei para quantity
 
         StockModel savedStock = stockService.save(stockModel);
 
         StockDTO responseDTO = new StockDTO();
         responseDTO.setId(savedStock.getId());
         responseDTO.setProductId(savedStock.getProduct().getId());
-        responseDTO.setAmount(savedStock.getAmount());
+        responseDTO.setQuantity(savedStock.getQuantity()); // Mudei para quantity
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -80,14 +79,14 @@ public class StockController {
             ProductModel product = productRepository.findById(stockDTO.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
             updatedStock.setProduct(product);
-            updatedStock.setAmount(stockDTO.getAmount());
+            updatedStock.setQuantity(stockDTO.getQuantity()); // Mudei para quantity
 
             StockModel savedStock = stockService.save(updatedStock);
 
             StockDTO responseDTO = new StockDTO();
             responseDTO.setId(savedStock.getId());
             responseDTO.setProductId(savedStock.getProduct().getId());
-            responseDTO.setAmount(savedStock.getAmount());
+            responseDTO.setQuantity(savedStock.getQuantity()); // Mudei para quantity
 
             return ResponseEntity.ok(responseDTO);
         } else {

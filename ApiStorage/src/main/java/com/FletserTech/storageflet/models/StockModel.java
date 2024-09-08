@@ -30,5 +30,5 @@ public class StockModel {
     private ProductModel product;
 
     @NotNull(message = "Amount is required")
-    private Integer amount;   
+    private Integer quantity;   
 }

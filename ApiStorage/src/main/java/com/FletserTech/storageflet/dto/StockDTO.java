@@ -13,6 +13,7 @@ public class StockDTO {
     @NotNull(message = "Product ID is required")
     private Long productId; 
 
-    @NotNull(message = "Amount is required")
-    private Integer amount;
+    @NotNull(message = "quantity is required")
+    private Integer quantity;
+    
 }

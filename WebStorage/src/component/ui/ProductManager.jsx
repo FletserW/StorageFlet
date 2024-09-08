@@ -1,12 +1,21 @@
+/* eslint-disable react/prop-types */
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
-import { Plus, ShoppingCart, Trash2 } from "lucide-react"; 
+import React, { useState, useEffect } from "react";
+import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
-function ProductManager({ darkMode, onConfirm }) {
+function ProductManager({ darkMode, onConfirm, product }) {
   const [quantity, setQuantity] = useState(0);
   const [unitType, setUnitType] = useState("unit"); // "unit" ou "box"
   const [action, setAction] = useState(""); // ação selecionada
+  const [boxSize, setBoxSize] = useState(90); // Tamanho padrão da caixa
+
+  useEffect(() => {
+    if (product && product.amount) {
+      // Atualiza o valor da caixa com base no 'amount' do produto selecionado
+      setBoxSize(product.amount);
+    }
+  }, [product]);
 
   const handleActionClick = (selectedAction) => {
     setAction(selectedAction);
@@ -19,12 +28,14 @@ function ProductManager({ darkMode, onConfirm }) {
   };
 
   return (
-    <div className={`p-4 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} rounded-lg shadow-md`}>
+    <div
+      className={`p-4 ${
+        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+      } rounded-lg shadow-md`}
+    >
       {/* Gerenciar Quantidade */}
       <div className="mb-4">
-        <label className="block text-sm font-medium">
-          Quantidade
-        </label>
+        <label className="block text-sm font-medium">Quantidade</label>
         <input
           type="number"
           value={quantity}
@@ -40,9 +51,7 @@ function ProductManager({ darkMode, onConfirm }) {
 
       {/* Tipo de Quantidade */}
       <div className="mb-4">
-        <label className="block text-sm font-medium">
-          Tipo de Quantidade
-        </label>
+        <label className="block text-sm font-medium">Tipo de Quantidade</label>
         <select
           value={unitType}
           onChange={(e) => setUnitType(e.target.value)}
@@ -53,22 +62,23 @@ function ProductManager({ darkMode, onConfirm }) {
           } rounded-md`}
         >
           <option value="unit">Unidade</option>
-          <option value="box">Caixa (10 por caixa)</option>
+          <option value="box">Caixa ({boxSize} por caixa)</option>
         </select>
         {unitType === "box" && (
-          <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-            Cada caixa contém 10 unidades
+          <p
+            className={`text-sm mt-1 ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Cada caixa contém {boxSize} unidades
           </p>
         )}
       </div>
 
       {/* Ações */}
       <div className="mb-4">
-        <label className="block text-sm font-medium">
-          Ações
-        </label>
+        <label className="block text-sm font-medium">Ações</label>
         <div className="flex space-x-4 mt-2">
-          {/* Adicionar */}
           <button
             onClick={() => handleActionClick("adicionar")}
             className={`flex items-center p-2 border rounded-md ${
@@ -82,7 +92,7 @@ function ProductManager({ darkMode, onConfirm }) {
             <Plus className="mr-2" />
             Adicionar
           </button>
-          {/* Vender */}
+
           <button
             onClick={() => handleActionClick("vender")}
             className={`flex items-center p-2 border rounded-md ${
@@ -96,7 +106,7 @@ function ProductManager({ darkMode, onConfirm }) {
             <ShoppingCart className="mr-2" />
             Vender
           </button>
-          {/* Perder */}
+
           <button
             onClick={() => handleActionClick("perder")}
             className={`flex items-center p-2 border rounded-md ${
@@ -113,7 +123,6 @@ function ProductManager({ darkMode, onConfirm }) {
         </div>
       </div>
 
-      {/* Botão de Confirmação */}
       <div className="flex justify-end">
         <button
           onClick={handleConfirm}

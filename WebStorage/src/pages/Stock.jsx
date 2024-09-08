@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import Sidebar from "../component/ui/SideBar";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
@@ -6,6 +6,7 @@ import config from "../config";
 import { Box } from "lucide-react";
 import ProductForm from "../component/ui/ProductForms";
 import ProductTable from "../component/ui/ProductTable"; // Importando o componente da tabela
+import ProductManager from "../component/ui/ProductManager"; // Importando o ProductManager
 
 function ProductList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,13 +16,16 @@ function ProductList() {
   });
   const [products, setProducts] = useState([]);
   const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+  const [isProductManagerOpen, setIsProductManagerOpen] = useState(false); // Estado para o modal de gerenciamento de produto
+  const [selectedProduct, setSelectedProduct] = useState(null); // Adiciona o estado do produto selecionado
   const [searchTerm, setSearchTerm] = useState(""); // Estado para a barra de pesquisa
 
+  // Fetch dos produtos do endpoint 'products/stocks'
   useEffect(() => {
     fetch(`${config.apiBaseUrl}products/stocks`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched data:", data);
+        console.log("Fetched data from products/stocks:", data);
         setProducts(data);
       })
       .catch((error) => console.error("Error fetching data:", error));
@@ -40,8 +44,22 @@ function ProductList() {
     setIsProductFormOpen(true); // Abrir o formulário
   };
 
+  const handleManageProductClick = () => {
+    if (selectedProduct) {
+      setIsProductManagerOpen(true); // Abrir o modal de gerenciamento de produto se um produto estiver selecionado
+    } else {
+      console.log("Nenhum produto selecionado.");
+    }
+  };
+
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product); // Define o produto selecionado
+  };
+
   const handleCloseModal = () => {
     setIsProductFormOpen(false); // Fechar o formulário
+    setIsProductManagerOpen(false); // Fechar o modal de gerenciamento de produto
+    window.location.reload();
   };
 
   // Função para filtrar produtos com base no termo de pesquisa
@@ -100,10 +118,17 @@ function ProductList() {
           </div>
 
           {/* Tabela de Produtos usando o componente ProductTable */}
-          <ProductTable products={filteredProducts} darkMode={darkMode} />
+          <ProductTable
+            products={filteredProducts}
+            darkMode={darkMode}
+            onRowClick={handleProductSelect} // Atualiza o produto selecionado ao clicar na linha
+          />
 
           <div className="flex mt-3 justify-end">
-            <button className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 px-4 py-2 rounded-md">
+            <button
+              onClick={handleManageProductClick} // Abrir modal de gerenciamento ao clicar
+              className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 px-4 py-2 rounded-md"
+            >
               Gerenciar
             </button>
           </div>
@@ -120,6 +145,25 @@ function ProductList() {
                 &times;
               </button>
               <ProductForm />
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Gerenciamento de Produtos */}
+        {isProductManagerOpen && selectedProduct && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg">
+              <button
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-4xl"
+                onClick={handleCloseModal}
+              >
+                &times;
+              </button>
+              <ProductManager
+                darkMode={darkMode}
+                onConfirm={(data) => console.log(data)}
+                product={selectedProduct} // Passa o produto selecionado
+              />
             </div>
           </div>
         )}

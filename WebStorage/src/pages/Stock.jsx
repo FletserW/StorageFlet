@@ -17,7 +17,7 @@ function ProductList() {
   const [products, setProducts] = useState([]);
   const [isProductFormOpen, setIsProductFormOpen] = useState(false);
   const [isProductManagerOpen, setIsProductManagerOpen] = useState(false); // Estado para o modal de gerenciamento de produto
-  const [selectedProduct, setSelectedProduct] = useState(null); // Adiciona o estado do produto selecionado
+  const [selectedProduct, setSelectedProduct] = useState(null); // Estado para o produto selecionado
   const [searchTerm, setSearchTerm] = useState(""); // Estado para a barra de pesquisa
 
   // Fetch dos produtos do endpoint 'products/stocks'
@@ -122,6 +122,7 @@ function ProductList() {
             products={filteredProducts}
             darkMode={darkMode}
             onRowClick={handleProductSelect} // Atualiza o produto selecionado ao clicar na linha
+            selectedProduct={selectedProduct} // Passa o produto selecionado para a tabela
           />
 
           <div className="flex mt-3 justify-end">

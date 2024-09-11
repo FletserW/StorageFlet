@@ -7,28 +7,45 @@ const ProductTable = ({ products, darkMode, onRowClick, selectedProduct }) => {
           <tr>
             <th
               className={`border-b p-2 ${
-                darkMode ? "text-gray-300 border-gray-700" : "text-gray-600 border-gray-300"
+                darkMode
+                  ? "text-gray-300 border-gray-700"
+                  : "text-gray-600 border-gray-300"
               }`}
             >
               Nome
             </th>
             <th
               className={`border-b p-2 ${
-                darkMode ? "text-gray-300 border-gray-700" : "text-gray-600 border-gray-300"
+                darkMode
+                  ? "text-gray-300 border-gray-700"
+                  : "text-gray-600 border-gray-300"
               }`}
             >
               Empresa
             </th>
             <th
               className={`border-b p-2 ${
-                darkMode ? "text-gray-300 border-gray-700" : "text-gray-600 border-gray-300"
+                darkMode
+                  ? "text-gray-300 border-gray-700"
+                  : "text-gray-600 border-gray-300"
               }`}
             >
-              Preço de Venda
+              Preço (Venda)
             </th>
             <th
               className={`border-b p-2 ${
-                darkMode ? "text-gray-300 border-gray-700" : "text-gray-600 border-gray-300"
+                darkMode
+                  ? "text-gray-300 border-gray-700"
+                  : "text-gray-600 border-gray-300"
+              }`}
+            >
+              Preço
+            </th>
+            <th
+              className={`border-b p-2 ${
+                darkMode
+                  ? "text-gray-300 border-gray-700"
+                  : "text-gray-600 border-gray-300"
               }`}
             >
               Quantidade
@@ -49,9 +66,14 @@ const ProductTable = ({ products, darkMode, onRowClick, selectedProduct }) => {
               onClick={() => onRowClick(product)} // Chama a função ao clicar na linha
             >
               <td className="border-b p-2">{product.name}</td>
-              <td className="border-b p-2">{product.supplier}</td>
-              <td className="border-b p-2">{product.sellingPrice}</td>
-              <td className="border-b p-2">{product.amount}</td>
+              <td className="border-b p-2">{product.enterprise}</td>
+              <td className="border-b p-2">
+                ${product.sellingPrice.toFixed(2)} {/* Adiciona o "$" e formata o preço */}
+              </td>
+              <td className="border-b p-2">
+                ${product.price.toFixed(2)} {/* Adiciona o "$" e formata o preço */}
+              </td>
+              <td className="border-b p-2">{product.quantity}</td>
             </tr>
           ))}
         </tbody>
@@ -59,4 +81,5 @@ const ProductTable = ({ products, darkMode, onRowClick, selectedProduct }) => {
     </div>
   );
 };
+
 export default ProductTable;

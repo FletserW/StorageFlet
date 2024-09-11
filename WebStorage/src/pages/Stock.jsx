@@ -59,7 +59,21 @@ function ProductList() {
   const handleCloseModal = () => {
     setIsProductFormOpen(false); // Fechar o formulário
     setIsProductManagerOpen(false); // Fechar o modal de gerenciamento de produto
-    window.location.reload();
+  };
+
+  // Função para atualizar a tabela de produtos e fechar o modal
+  const handleProductUpdate = () => {
+    // Fechar o modal
+    setIsProductManagerOpen(false);
+
+    // Recarregar os produtos do backend após a atualização
+    fetch(`${config.apiBaseUrl}products/stocks`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Produtos atualizados:", data);
+        setProducts(data); // Atualiza o estado com os novos dados
+      })
+      .catch((error) => console.error("Erro ao atualizar os produtos:", error));
   };
 
   // Função para filtrar produtos com base no termo de pesquisa
@@ -150,20 +164,19 @@ function ProductList() {
           </div>
         )}
 
-        {/* Modal de Gerenciamento de Produtos */}
         {isProductManagerOpen && selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg">
               <button
                 className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-4xl"
-                onClick={handleCloseModal}
+                onClick={handleCloseModal} // Fecha o modal ao clicar no "X"
               >
                 &times;
               </button>
               <ProductManager
                 darkMode={darkMode}
-                onConfirm={(data) => console.log(data)}
-                product={selectedProduct} // Passa o produto selecionado
+                onConfirm={handleProductUpdate} // Chama a função que atualiza a tabela e fecha o modal
+                product={selectedProduct} // Passa o produto selecionado para o modal
               />
             </div>
           </div>

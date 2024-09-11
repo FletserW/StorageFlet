@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { Plus, ShoppingCart, Trash2 } from "lucide-react";
+import config from "../../config";
 
 // eslint-disable-next-line react/prop-types
 function ProductManager({ darkMode, onConfirm, product }) {
@@ -22,9 +23,283 @@ function ProductManager({ darkMode, onConfirm, product }) {
   };
 
   const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm({ quantity, unitType, action });
+    let updatedQuantity = product.quantity; // Quantidade atual no estoque
+
+    // Verificar se o tipo de unidade é caixa ou unidade
+    let modifiedQuantity;
+    let totalCost;
+
+    if (unitType === "box") {
+      modifiedQuantity = quantity * boxSize; // Total de unidades adicionadas
+      totalCost = product.price * quantity; // Custo total é preço por caixa vezes número de caixas
+    } else {
+      modifiedQuantity = quantity;
+      const unitCost = product.price / boxSize; // Custo por unidade
+      totalCost = unitCost * quantity; // Custo total é custo por unidade vezes número de unidades
     }
+
+    // Data atual para o registro monthYear
+    const currentDate = new Date();
+    const monthYear = `${
+      currentDate.getMonth() + 1
+    }-${currentDate.getFullYear()}`;
+
+    if (action === "adicionar") {
+      updatedQuantity += modifiedQuantity;
+
+      // Verificar se já existe um registro de monthYear
+      fetch(`${config.apiBaseUrl}wallets/list`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const existingRecord = data.find(
+            (record) => record.monthYear === monthYear
+          );
+
+          let walletData = {
+            monthYear: monthYear,
+            gainValue: existingRecord ? existingRecord.gainValue : 0, // Mantém o valor de ganho atual
+            spentValue: totalCost,
+            lossValue: existingRecord ? existingRecord.lossValue : 0, // Mantém o valor de perda atual
+          };
+
+          if (existingRecord) {
+            // Atualizar o registro existente somando o novo valor gasto
+            walletData.spentValue += existingRecord.spentValue;
+
+            fetch(
+              `${config.apiBaseUrl}wallets/change/${existingRecord.id}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(walletData),
+              }
+            )
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((updatedRecord) =>
+                console.log("Registro atualizado:", updatedRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao atualizar registro:", error)
+              );
+          } else {
+            // Criar novo registro
+            fetch(`${config.apiBaseUrl}wallets/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(walletData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((newRecord) =>
+                console.log("Novo registro criado:", newRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao criar registro:", error)
+              );
+          }
+        })
+        .catch((error) => console.error("Erro ao buscar registros:", error));
+    } else if (action === "vender") {
+      updatedQuantity -= modifiedQuantity;
+
+      // Calcular o valor de ganho
+      const unitSellingPrice = product.sellingPrice;
+      const unitCostPrice = product.price / boxSize;
+      const gain = (unitSellingPrice - unitCostPrice) * modifiedQuantity;
+
+      // Verificar se já existe um registro de monthYear
+      fetch(`${config.apiBaseUrl}wallets/list`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const existingRecord = data.find(
+            (record) => record.monthYear === monthYear
+          );
+
+          let walletData = {
+            monthYear: monthYear,
+            gainValue: gain,
+            spentValue: existingRecord ? existingRecord.spentValue : 0,
+            lossValue: existingRecord ? existingRecord.lossValue : 0,
+          };
+
+          if (existingRecord) {
+            // Atualizar o registro existente somando o novo ganho
+            walletData.gainValue += existingRecord.gainValue;
+
+            fetch(
+              `${config.apiBaseUrl}wallets/change/${existingRecord.id}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(walletData),
+              }
+            )
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((updatedRecord) =>
+                console.log("Registro atualizado:", updatedRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao atualizar registro:", error)
+              );
+          } else {
+            // Criar novo registro
+            fetch(`${config.apiBaseUrl}wallets/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(walletData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((newRecord) =>
+                console.log("Novo registro criado:", newRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao criar registro:", error)
+              );
+          }
+        })
+        .catch((error) => console.error("Erro ao buscar registros:", error));
+    } else if (action === "perder") {
+      updatedQuantity -= modifiedQuantity; // Reduz a quantidade no estoque
+
+      // Calcular o custo da perda (usando o preço do produto)
+      const lossCost = totalCost;
+
+      // Verificar se já existe um registro de monthYear
+      fetch(`${config.apiBaseUrl}wallets/list`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const existingRecord = data.find(
+            (record) => record.monthYear === monthYear
+          );
+
+          let walletData = {
+            monthYear: monthYear,
+            gainValue: existingRecord ? existingRecord.gainValue : 0,
+            spentValue: existingRecord ? existingRecord.spentValue : 0,
+            lossValue: lossCost, // Adiciona o custo da perda
+          };
+
+          if (existingRecord) {
+            // Atualizar o registro existente somando o novo valor de perda
+            walletData.lossValue += existingRecord.lossValue;
+
+            fetch(
+              `${config.apiBaseUrl}wallets/change/${existingRecord.id}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(walletData),
+              }
+            )
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((updatedRecord) =>
+                console.log("Registro de perda atualizado:", updatedRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao atualizar registro de perda:", error)
+              );
+          } else {
+            // Criar novo registro de perda
+            fetch(`${config.apiBaseUrl}wallets/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(walletData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((newRecord) =>
+                console.log("Novo registro de perda criado:", newRecord)
+              )
+              .catch((error) =>
+                console.error("Erro ao criar registro de perda:", error)
+              );
+          }
+        })
+        .catch((error) => console.error("Erro ao buscar registros:", error));
+    }
+
+    // Atualizar o estoque no backend
+    fetch(`${config.apiBaseUrl}stocks/change/${product.stockId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: product.id,
+        quantity: updatedQuantity,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Estoque atualizado:", data);
+        if (onConfirm) {
+          onConfirm(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao atualizar estoque:", error);
+      });
+      onConfirm();
   };
 
   return (

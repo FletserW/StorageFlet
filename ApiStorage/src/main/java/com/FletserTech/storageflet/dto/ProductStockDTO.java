@@ -15,5 +15,6 @@ public class ProductStockDTO {
     private String enterprise;
     private Integer quantity;
     private Integer amount;
+    private Long stockId;
     
 }

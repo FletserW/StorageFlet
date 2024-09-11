@@ -119,13 +119,84 @@ function ProductManager({ darkMode, onConfirm, product }) {
         .catch((error) => console.error("Erro ao buscar registros:", error));
     } else if (action === "vender") {
       updatedQuantity -= modifiedQuantity;
-
+    
       // Calcular o valor de ganho
       const unitSellingPrice = product.sellingPrice;
       const unitCostPrice = product.price / boxSize;
       const gain = (unitSellingPrice - unitCostPrice) * modifiedQuantity;
-
-      // Verificar se já existe um registro de monthYear
+    
+      // Data atual para o registro monthYear
+      const currentDate = new Date();
+      const monthYear = `${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
+    
+      // Verificar se já existe um registro de venda para o produto e mês/ano
+      fetch(`${config.apiBaseUrl}sales/list?monthYear=${monthYear}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((salesData) => {
+          const existingSale = salesData.find(
+            (sale) => sale.productId === product.id && sale.monthYear === monthYear
+          );
+    
+          const saleData = {
+            productId: product.id,
+            monthYear: monthYear,
+            quantitySales: modifiedQuantity,
+          };
+    
+          if (existingSale) {
+            // Atualizar o registro de venda existente somando a quantidade vendida
+            saleData.quantitySales += existingSale.quantitySales;
+    
+            fetch(`${config.apiBaseUrl}sales/change/${existingSale.id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(saleData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((updatedSale) =>
+                console.log("Venda atualizada:", updatedSale)
+              )
+              .catch((error) =>
+                console.error("Erro ao atualizar venda:", error)
+              );
+          } else {
+            // Criar novo registro de venda
+            fetch(`${config.apiBaseUrl}sales/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(saleData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((newSale) =>
+                console.log("Nova venda registrada:", newSale)
+              )
+              .catch((error) =>
+                console.error("Erro ao registrar nova venda:", error)
+              );
+          }
+        })
+        .catch((error) => console.error("Erro ao buscar vendas:", error));
+    
+      // Verificar se já existe um registro de monthYear para a wallet
       fetch(`${config.apiBaseUrl}wallets/list`, {
         method: "GET",
         headers: {
@@ -137,18 +208,18 @@ function ProductManager({ darkMode, onConfirm, product }) {
           const existingRecord = data.find(
             (record) => record.monthYear === monthYear
           );
-
+    
           let walletData = {
             monthYear: monthYear,
             gainValue: gain,
             spentValue: existingRecord ? existingRecord.spentValue : 0,
             lossValue: existingRecord ? existingRecord.lossValue : 0,
           };
-
+    
           if (existingRecord) {
             // Atualizar o registro existente somando o novo ganho
             walletData.gainValue += existingRecord.gainValue;
-
+    
             fetch(
               `${config.apiBaseUrl}wallets/change/${existingRecord.id}`,
               {
@@ -195,13 +266,14 @@ function ProductManager({ darkMode, onConfirm, product }) {
           }
         })
         .catch((error) => console.error("Erro ao buscar registros:", error));
+    
     } else if (action === "perder") {
       updatedQuantity -= modifiedQuantity; // Reduz a quantidade no estoque
-
+    
       // Calcular o custo da perda (usando o preço do produto)
       const lossCost = totalCost;
-
-      // Verificar se já existe um registro de monthYear
+    
+      // Verificar se já existe um registro de monthYear para a wallet
       fetch(`${config.apiBaseUrl}wallets/list`, {
         method: "GET",
         headers: {
@@ -213,18 +285,18 @@ function ProductManager({ darkMode, onConfirm, product }) {
           const existingRecord = data.find(
             (record) => record.monthYear === monthYear
           );
-
+    
           let walletData = {
             monthYear: monthYear,
             gainValue: existingRecord ? existingRecord.gainValue : 0,
             spentValue: existingRecord ? existingRecord.spentValue : 0,
             lossValue: lossCost, // Adiciona o custo da perda
           };
-
+    
           if (existingRecord) {
             // Atualizar o registro existente somando o novo valor de perda
             walletData.lossValue += existingRecord.lossValue;
-
+    
             fetch(
               `${config.apiBaseUrl}wallets/change/${existingRecord.id}`,
               {
@@ -272,8 +344,7 @@ function ProductManager({ darkMode, onConfirm, product }) {
         })
         .catch((error) => console.error("Erro ao buscar registros:", error));
     }
-
-    // Atualizar o estoque no backend
+    
     fetch(`${config.apiBaseUrl}stocks/change/${product.stockId}`, {
       method: "PUT",
       headers: {
@@ -299,8 +370,7 @@ function ProductManager({ darkMode, onConfirm, product }) {
       .catch((error) => {
         console.error("Erro ao atualizar estoque:", error);
       });
-      onConfirm();
-  };
+    }    
 
   return (
     <div

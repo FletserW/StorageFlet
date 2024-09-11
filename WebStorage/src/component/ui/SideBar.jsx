@@ -19,7 +19,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
         className={`fixed z-30 h-full top-0 left-0 transform transition-all duration-300 
           ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-16"} 
           bg-gray-800 p-4 dark:bg-gray-950 md:translate-x-0 md:w-64 md:h-screen md:static md:relative 
-          ${isSidebarOpen ? "md:w-40" : "md:w-14"}`}
+          ${isSidebarOpen ? "md:w-38" : "md:w-16"}`}
       >
         {/* Logo and Site Name */}
         <div className="flex items-center mb-8">

@@ -5,7 +5,7 @@ import config from "../config";
 import DarkModeToggle from "../component/ui/DarkModeToggle";
 import { Card } from "../component/ui/dashboard/Card";
 import { Overview } from "../component/ui/dashboard/Overview";
-import { RecentSales } from "../component/ui/dashboard/RecentSales";
+import { TopSales } from "../component/ui/dashboard/TopSales";
 
 function DashBoard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -170,7 +170,7 @@ function DashBoard() {
         {/* Overview and Recent Sales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Overview />
-          <RecentSales />
+          <TopSales selectedMonthYear={selectedMonthYear} />
         </div>
       </div>
     </div>

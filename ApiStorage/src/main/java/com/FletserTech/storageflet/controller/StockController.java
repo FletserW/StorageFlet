@@ -58,31 +58,9 @@ public class StockController {
 
         StockModel stockModel = new StockModel();
         stockModel.setProduct(product);
-        stockModel.setQuantity(stockDTO.getQuantity()); // Mudei para quantity
+        stockModel.setQuantity(stockDTO.getQuantity());
 
         StockModel savedStock = stockService.save(stockModel);
-
-        StockDTO responseDTO = new StockDTO();
-        responseDTO.setId(savedStock.getId());
-        responseDTO.setProductId(savedStock.getProduct().getId());
-        responseDTO.setQuantity(savedStock.getQuantity()); // Mudei para quantity
-
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    @PutMapping("/change/{id}")
-public ResponseEntity<StockDTO> updateStock(@PathVariable Long id, @RequestBody StockDTO stockDTO) {
-    System.out.println("Recebido no backend: " + stockDTO);
-    
-    Optional<StockModel> stock = stockService.findById(id);
-    if (stock.isPresent()) {
-        StockModel updatedStock = stock.get();
-        ProductModel product = productRepository.findById(stockDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-        updatedStock.setProduct(product);
-        updatedStock.setQuantity(stockDTO.getQuantity()); // Atualiza a quantidade
-
-        StockModel savedStock = stockService.save(updatedStock);
 
         StockDTO responseDTO = new StockDTO();
         responseDTO.setId(savedStock.getId());
@@ -90,10 +68,33 @@ public ResponseEntity<StockDTO> updateStock(@PathVariable Long id, @RequestBody 
         responseDTO.setQuantity(savedStock.getQuantity());
 
         return ResponseEntity.ok(responseDTO);
-    } else {
-        return ResponseEntity.notFound().build();
     }
-}
+
+    @PutMapping("/change/{id}")
+    public ResponseEntity<StockDTO> updateStock(@PathVariable Long id, @RequestBody StockDTO stockDTO) {
+        System.out.println("Recebido no backend: " + stockDTO);
+
+        Optional<StockModel> stock = stockService.findById(id);
+        if (stock.isPresent()) {
+            StockModel updatedStock = stock.get();
+            ProductModel product = productRepository.findById(stockDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            updatedStock.setProduct(product);
+            updatedStock.setQuantity(stockDTO.getQuantity());
+
+            StockModel savedStock = stockService.save(updatedStock);
+
+            StockDTO responseDTO = new StockDTO();
+            responseDTO.setId(savedStock.getId());
+            responseDTO.setProductId(savedStock.getProduct().getId());
+            responseDTO.setQuantity(savedStock.getQuantity());
+
+            return ResponseEntity.ok(responseDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/remove/{id}")
     @Operation(summary = "Rota responsável por remover um produto em estoque")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {

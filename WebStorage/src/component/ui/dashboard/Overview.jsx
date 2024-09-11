@@ -54,7 +54,7 @@ export function Overview() {
       {
         label: "Lucro Mensal (Gain Value)",
         data: monthlyGainData,
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        backgroundColor: "rgba(99, 102, 241, 1)", //azul rgba(75, 192, 192, 0.6)
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
@@ -68,10 +68,6 @@ export function Overview() {
       legend: {
         display: true,
         position: "top",
-      },
-      title: {
-        display: true,
-        text: "Lucro Mensal no Ano Atual",
       },
     },
     scales: {

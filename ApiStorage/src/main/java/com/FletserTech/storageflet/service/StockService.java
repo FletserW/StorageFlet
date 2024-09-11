@@ -24,18 +24,19 @@ public class StockService {
         return stockRepository.findById(id);
     }
 
-    public StockModel save(StockModel stock) {
-        // Validações adicionais podem ser adicionadas aqui
-        if (stock.getProduct() == null) {
-            throw new IllegalArgumentException("Stock must have a product associated");
-        }
+    public StockModel save(StockModel stockModel) {
+        // Verificar se já existe um estoque para o produto
+        Optional<StockModel> existingStock = stockRepository.findByProductId(stockModel.getProduct().getId());
 
-        // Verifica se já existe um estoque para o produto
-        if (stockRepository.existsById(stock.getProduct().getId())) {
-            throw new IllegalArgumentException("Stock for this product already exists");
+        if (existingStock.isPresent()) {
+            // Se já existe, atualize a quantidade
+            StockModel stock = existingStock.get();
+            stock.setQuantity(stockModel.getQuantity());
+            return stockRepository.save(stock);
+        } else {
+            // Caso contrário, crie um novo estoque
+            return stockRepository.save(stockModel);
         }
-
-        return stockRepository.save(stock);
     }
 
     public void deleteById(Long id) {

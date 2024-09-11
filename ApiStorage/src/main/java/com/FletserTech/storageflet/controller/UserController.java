@@ -63,7 +63,7 @@ public class UserController {
     @GetMapping("/")
     @Operation(summary = "Rota responsável pelo teste de conexão")
     public String rota(){
-        return "Api funcionando";
+        return "Api funcionando (users)";
     }
 
 }

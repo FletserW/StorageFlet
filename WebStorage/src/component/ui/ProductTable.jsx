@@ -13,7 +13,7 @@ const ProductTable = ({ products, darkMode, onRowClick, selectedProduct }) => {
               }`}
             >
               Nome
-            </th>
+            </th> 
             <th
               className={`border-b p-2 ${
                 darkMode

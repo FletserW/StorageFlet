@@ -5,8 +5,8 @@ import DarkModeToggle from "../component/ui/DarkModeToggle";
 import config from "../config";
 import { Box } from "lucide-react";
 import ProductForm from "../component/ui/ProductForms";
-import ProductTable from "../component/ui/ProductTable"; // Importando o componente da tabela
-import ProductManager from "../component/ui/ProductManager"; // Importando o ProductManager
+import ProductTable from "../component/ui/ProductTable"; 
+import ProductManager from "../component/ui/ProductManager"; 
 
 function ProductList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -177,6 +177,7 @@ function ProductList() {
                 darkMode={darkMode}
                 onConfirm={handleProductUpdate} // Chama a função que atualiza a tabela e fecha o modal
                 product={selectedProduct} // Passa o produto selecionado para o modal
+                entityName="stocks"
               />
             </div>
           </div>

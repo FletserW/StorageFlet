@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import config from "../../config";
+import SuppliersForms from "./SupplersForms";
 
 function ProductForm() {
   const [formData, setFormData] = useState({
@@ -11,14 +12,31 @@ function ProductForm() {
   });
 
   const [suppliers, setSuppliers] = useState([]);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => {
+  // Função para abrir o modal
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  // Função para fechar o modal
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  // Função para buscar fornecedores
+  const fetchSuppliers = () => {
     fetch(`${config.apiBaseUrl}suppliers/list`)
       .then((response) => response.json())
       .then((data) => setSuppliers(data))
       .catch((error) => console.error("Erro ao buscar fornecedores:", error));
+  };
+
+  useEffect(() => {
+    fetchSuppliers(); // Carregar fornecedores ao montar o componente
   }, []);
 
+  // Atualiza os valores do formulário conforme o usuário preenche
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -27,10 +45,10 @@ function ProductForm() {
     }));
   };
 
+  // Função de submissão do formulário de produtos
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Verificar se os valores não são nulos
     if (!formData.name || !formData.supplierId) {
       console.error("Nome do produto e fornecedor são obrigatórios.");
       return;
@@ -38,18 +56,17 @@ function ProductForm() {
 
     const requestBody = {
       name: formData.name,
-      supplierId: parseInt(formData.supplierId, 10), // Certifique-se de que é um número
+      supplierId: parseInt(formData.supplierId, 10),
       price: parseFloat(formData.price),
       sellingPrice: parseFloat(formData.sellingPrice),
       amount: parseInt(formData.amount, 10),
     };
 
-    console.log("Enviando dados:", requestBody);
-
+    // Envia os dados para o backend
     fetch(`${config.apiBaseUrl}products/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
     })
@@ -57,11 +74,10 @@ function ProductForm() {
         if (response.ok) {
           return response.json();
         }
-        throw new Error('Erro ao salvar produto');
+        throw new Error("Erro ao salvar produto");
       })
       .then((data) => {
         console.log("Produto salvo com sucesso:", data);
-        // Fechar o modal ou limpar o formulário
         setFormData({
           name: "",
           supplierId: "",
@@ -79,6 +95,7 @@ function ProductForm() {
         Cadastrar Produto
       </h2>
 
+      {/* Formulário de cadastro de produto */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Nome do Produto */}
         <div>
@@ -100,29 +117,40 @@ function ProductForm() {
           />
         </div>
 
-        {/* Fornecedor */}
-        <div>
-          <label
-            htmlFor="supplierId"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        {/* Fornecedor e botão + */}
+        <div className="flex items-center">
+          <div className="flex-grow">
+            <label
+              htmlFor="supplierId"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Fornecedor
+            </label>
+            <select
+              id="supplierId"
+              name="supplierId"
+              value={formData.supplierId}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Selecione o fornecedor</option>
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.enterprise}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Botão + para abrir o modal */}
+          <button
+            type="button"
+            onClick={handleOpenModal}
+            className="ml-2 mt-6 px-3 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600"
           >
-            Fornecedor
-          </label>
-          <select
-            id="supplierId"
-            name="supplierId"
-            value={formData.supplierId}
-            onChange={handleInputChange}
-            required
-            className="mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">Selecione o fornecedor</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.enterprise}
-              </option>
-            ))}
-          </select>
+            +
+          </button>
         </div>
 
         {/* Preço de Compra */}
@@ -197,6 +225,27 @@ function ProductForm() {
           </button>
         </div>
       </form>
+
+      {/* Modal de cadastro de fornecedor (fora do formulário principal) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Cadastrar Fornecedor</h2>
+            <SuppliersForms
+              onClose={() => {
+                handleCloseModal();
+                fetchSuppliers(); // Atualiza a lista de fornecedores após cadastro
+              }}
+            />
+            <button
+              onClick={handleCloseModal}
+              className="mt-4 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

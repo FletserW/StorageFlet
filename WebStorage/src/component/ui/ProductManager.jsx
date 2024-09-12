@@ -5,7 +5,7 @@ import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 import config from "../../config";
 
 // eslint-disable-next-line react/prop-types
-function ProductManager({ darkMode, onConfirm, product }) {
+function ProductManager({ darkMode, onConfirm, product, entityName }) {
   const [quantity, setQuantity] = useState(0);
   const [unitType, setUnitType] = useState("unit"); // "unit" ou "box"
   const [action, setAction] = useState(""); // ação selecionada
@@ -345,7 +345,7 @@ function ProductManager({ darkMode, onConfirm, product }) {
         .catch((error) => console.error("Erro ao buscar registros:", error));
     }
     
-    fetch(`${config.apiBaseUrl}stocks/change/${product.stockId}`, {
+    fetch(`${config.apiBaseUrl}${entityName}/change/${product.stockId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

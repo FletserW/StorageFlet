@@ -85,6 +85,7 @@ function ProductForm() {
           sellingPrice: "",
           amount: "",
         });
+        window.location.reload();
       })
       .catch((error) => console.error("Erro ao salvar produto:", error));
   };

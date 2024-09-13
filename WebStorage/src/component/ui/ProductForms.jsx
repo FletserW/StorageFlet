@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import config from "../../config";
-import SuppliersForms from "./SupplersForms";
+import SuppliersForms from "./SupplierForm";
 
 function ProductForm() {
   const [formData, setFormData] = useState({

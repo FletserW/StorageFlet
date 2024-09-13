@@ -4,6 +4,7 @@ import SignUp from "./pages/SignUp";
 import DashBoard from "./pages/DashBoard"
 import Stock from "./pages/Stock";
 import Freezer from "./pages/Freezer";
+import Supplier from "./pages/Supplier";
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<DashBoard/>}/>
         <Route path="/estoque" element={<Stock/>}/>
-        <Route path="freezer" element={<Freezer/>}/>
+        <Route path="/freezer" element={<Freezer/>}/>
+        <Route path="/supplier" element={<Supplier/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="signup" element={<SignUp/>}/>
       </Routes>

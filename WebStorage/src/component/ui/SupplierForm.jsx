@@ -1,12 +1,16 @@
-import { useState } from 'react';
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
+import config from "../../config";
 
 // eslint-disable-next-line react/prop-types
-function SuppliersForms({ onClose }) {
+function SupplierForm({ onConfirm, supplier, onClose }) {
+  // Inicializa os dados do formulário com o fornecedor selecionado ou com campos vazios
   const [formData, setFormData] = useState({
-    enterprise: "",
-    contact: "",
-    email: "",
-    telephone: "",
+    enterprise: supplier?.enterprise || "",
+    contact: supplier?.contact || "",
+    email: supplier?.email || "",
+    telephone: supplier?.telephone || "",
   });
 
   const [errors, setErrors] = useState({
@@ -45,35 +49,50 @@ function SuppliersForms({ onClose }) {
     e.preventDefault();
 
     if (!validateForm()) {
-      console.error('Preencha todos os campos.');
+      console.error("Preencha todos os campos.");
       return;
     }
 
-    fetch("http://localhost:8081/suppliers/register", {
-      method: "POST",
+    const endpoint = supplier
+      ? `${config.apiBaseUrl}suppliers/change/${supplier.id}`
+      : `${config.apiBaseUrl}suppliers/register`;
+
+    const method = supplier ? "PUT" : "POST";
+
+    fetch(endpoint, {
+      method,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(formData), // Não precisa incluir o ID aqui
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Erro ao cadastrar fornecedor.");
+          throw new Error(
+            supplier
+              ? "Erro ao editar fornecedor."
+              : "Erro ao cadastrar fornecedor."
+          );
         }
         return response.json();
       })
       .then((data) => {
-        console.log('Fornecedor cadastrado com sucesso:', data);
-        onClose(); // Fecha o modal e atualiza os fornecedores no formulário de produto
+        console.log(
+          supplier
+            ? "Fornecedor editado com sucesso:"
+            : "Fornecedor cadastrado com sucesso:",
+          data
+        );
+        onConfirm();
+        window.location.reload(); 
       })
       .catch((error) => {
-        console.error('Erro ao cadastrar fornecedor:', error);
+        console.error(error.message);
       });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Empresa */}
       <div>
         <label
           htmlFor="enterprise"
@@ -87,14 +106,14 @@ function SuppliersForms({ onClose }) {
           name="enterprise"
           value={formData.enterprise}
           onChange={handleInputChange}
-          required
           className={`mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white ${
-            errors.enterprise ? 'border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'
+            errors.enterprise
+              ? "border-red-500"
+              : "focus:ring-blue-500 focus:border-blue-500"
           }`}
         />
       </div>
 
-      {/* Contato */}
       <div>
         <label
           htmlFor="contact"
@@ -108,14 +127,14 @@ function SuppliersForms({ onClose }) {
           name="contact"
           value={formData.contact}
           onChange={handleInputChange}
-          required
           className={`mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white ${
-            errors.contact ? 'border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'
+            errors.contact
+              ? "border-red-500"
+              : "focus:ring-blue-500 focus:border-blue-500"
           }`}
         />
       </div>
 
-      {/* Email */}
       <div>
         <label
           htmlFor="email"
@@ -129,14 +148,14 @@ function SuppliersForms({ onClose }) {
           name="email"
           value={formData.email}
           onChange={handleInputChange}
-          required
           className={`mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white ${
-            errors.email ? 'border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'
+            errors.email
+              ? "border-red-500"
+              : "focus:ring-blue-500 focus:border-blue-500"
           }`}
         />
       </div>
 
-      {/* Telefone */}
       <div>
         <label
           htmlFor="telephone"
@@ -150,9 +169,10 @@ function SuppliersForms({ onClose }) {
           name="telephone"
           value={formData.telephone}
           onChange={handleInputChange}
-          required
           className={`mt-1 block w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-800 dark:text-white ${
-            errors.telephone ? 'border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'
+            errors.telephone
+              ? "border-red-500"
+              : "focus:ring-blue-500 focus:border-blue-500"
           }`}
         />
       </div>
@@ -162,11 +182,11 @@ function SuppliersForms({ onClose }) {
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
         >
-          Cadastrar
+          {supplier ? "Salvar Alterações" : "Cadastrar"}
         </button>
       </div>
     </form>
   );
 }
 
-export default SuppliersForms;
+export default SupplierForm;

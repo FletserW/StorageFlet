@@ -1,8 +1,22 @@
-# React + Vite
+# Frontend do Sistema de Gestão de Estoque
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositório contém o frontend para o sistema de gestão de estoque, desenvolvido com React e Tailwind CSS. Ele foi projetado para funcionar com a API do sistema, que lida com fornecedores, produtos e pedidos.
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React**: Biblioteca JavaScript para construção da interface de usuário.
+- **Tailwind CSS**: Framework CSS para estilização e design responsivo.
+- **React Router DOM**: Biblioteca para roteamento e navegação.
+- **Lucide Icons**: Biblioteca de ícones para uma interface moderna.
+
+## Funcionalidades
+
+- **Sidebar**: Navegação lateral com links para diferentes seções do sistema (Dashboard, Estoque, Freezer, Fornecedores, Configurações, Login).
+- **Dark Mode**: Alternância entre modos claro e escuro.
+- **Tela de Fornecedores**:
+  - **Tabela de Fornecedores**: Exibição e pesquisa de fornecedores.
+  - **Formulário de Cadastro/Editoração**: Adiciona e edita fornecedores.
+- **Tela de Produtos**:
+  - **Tabela de Produtos**: Exibição dos produtos com detalhes como nome, fornecedor, preço e quantidade.
+  - **Formulário de Cadastro/Editoração de Produtos**: Adiciona e edita produtos.
+- **Tela de Dashboard**: Exibe gráficos e resumo das informações do sistema.

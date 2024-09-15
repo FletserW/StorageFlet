@@ -20,3 +20,13 @@ Este repositório contém o frontend para o sistema de gestão de estoque, desen
   - **Tabela de Produtos**: Exibição dos produtos com detalhes como nome, fornecedor, preço e quantidade.
   - **Formulário de Cadastro/Editoração de Produtos**: Adiciona e edita produtos.
 - **Tela de Dashboard**: Exibe gráficos e resumo das informações do sistema.
+
+## Estrutura do Projeto
+
+- **src/**: Contém o código-fonte do frontend.
+  - **components/**: Componentes reutilizáveis, como Sidebar, SupplierTable, ProductTable.
+  - **ui/**: Componentes de interface do usuário, como DarkModeToggle, SupplierForm.
+  - **pages/**: Páginas do aplicativo, como Supplier, Product, Dashboard.
+- **config.js**: Configurações do aplicativo, incluindo URL da API.
+- **public/**: Arquivos estáticos como o index.html.
+

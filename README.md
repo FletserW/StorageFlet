@@ -90,3 +90,25 @@ npm install
 ```bash
 npm start
 ```
+Acesse http://localhost:5173 no navegador para visualizar o frontend.
+### 4. Estrutura do projeto
+A estrutura de pastas do projeto é a seguinte: 
+```bash
+/ApiStorage    # Código do backend Spring Boot
+ └── /src
+     └── /main
+         └── /java/com/FletserTech/storageflet
+             ├── /controller      # Controladores da API
+             ├── /dto             # Objetos de Transferência de Dados
+             ├── /models          # Modelos de dados (entidades)
+             ├── /repository      # Repositórios JPA
+             └── /service         # Serviços da aplicação
+
+/WebStorage    # Código do frontend React
+ └── /src
+     ├── /assets                  # Recursos estáticos (imagens, fontes, etc.)
+     └── /component/ui            # Componentes de UI
+         └── /dashboard           # Componentes do dashboard
+     └── /pages                   # Páginas da aplicação
+
+```

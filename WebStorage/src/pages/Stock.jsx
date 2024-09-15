@@ -7,6 +7,7 @@ import { Box } from "lucide-react";
 import ProductForm from "../component/ui/ProductForms";
 import ProductTable from "../component/ui/ProductTable"; // Importando o componente da tabela
 import ProductManager from "../component/ui/ProductManager"; // Importando o ProductManager
+import ProductFormEdit from "../component/ui/ProductFormEdit";
 
 function ProductList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -90,7 +91,7 @@ function ProductList() {
       >
         {/* Sidebar */}
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
+  
         {/* Main Content */}
         <div
           className={`flex-1 p-4 md:p-8 transition-all duration-300 ${
@@ -109,7 +110,7 @@ function ProductList() {
               toggleDarkMode={toggleDarkMode}
             />
           </header>
-
+  
           {/* Search Bar */}
           <div className="flex justify-between items-center mb-6">
             <input
@@ -130,7 +131,7 @@ function ProductList() {
               + Adicionar Novo
             </button>
           </div>
-
+  
           {/* Tabela de Produtos usando o componente ProductTable */}
           <ProductTable
             products={filteredProducts}
@@ -138,19 +139,29 @@ function ProductList() {
             onRowClick={handleProductSelect} // Atualiza o produto selecionado ao clicar na linha
             selectedProduct={selectedProduct} // Passa o produto selecionado para a tabela
           />
-
+  
           <div className="flex mt-3 justify-end">
-            <button
-              onClick={handleManageProductClick} // Abrir modal de gerenciamento ao clicar
-              className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 px-4 py-2 rounded-md"
-            >
-              Gerenciar
-            </button>
+            {selectedProduct && (
+              <>
+                <button
+                  onClick={handleManageProductClick} // Abrir modal de gerenciamento ao clicar
+                  className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 px-4 py-2 rounded-md"
+                >
+                  Gerenciar
+                </button>
+                <button
+                  onClick={() => setIsProductFormOpen(true)} // Abrir modal de edição ao clicar
+                  className="ml-4 text-white bg-indigo-600 dark:bg-indigo-500 border border-transparent shadow-sm hover:bg-yellow-600 dark:hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 dark:focus:ring-yellow-400 px-4 py-2 rounded-md"
+                >
+                  Editar
+                </button>
+              </>
+            )}
           </div>
         </div>
-
+  
         {/* Modal de Cadastro de Produtos */}
-        {isProductFormOpen && (
+        {isProductFormOpen && selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg">
               <button
@@ -159,23 +170,24 @@ function ProductList() {
               >
                 &times;
               </button>
-              <ProductForm />
+              <ProductFormEdit product={selectedProduct} /> {/* Passa o produto selecionado para o formulário */}
             </div>
           </div>
         )}
-
+  
+        {/* Modal de Gerenciamento de Produtos */}
         {isProductManagerOpen && selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg">
               <button
                 className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-4xl"
-                onClick={handleCloseModal} // Fecha o modal ao clicar no "X"
+                onClick={handleCloseModal}
               >
                 &times;
               </button>
               <ProductManager
                 darkMode={darkMode}
-                onConfirm={handleProductUpdate} // Chama a função que atualiza a tabela e fecha o modal
+                onConfirm={handleProductUpdate}
                 product={selectedProduct} // Passa o produto selecionado para o modal
                 entityName="stocks"
               />
@@ -185,6 +197,7 @@ function ProductList() {
       </div>
     </div>
   );
+  
 }
 
 export default ProductList;

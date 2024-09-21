@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         {/* Definimos a rota para a página de login */}
-        <Route path="/" element={<DashBoard/>} />
+        <Route path="/" element={<DashBoard />} />
         <Route path="/dashboard" element={<DashBoard/>}/>
         <Route path="/estoque" element={<Stock/>}/>
         <Route path="/freezer" element={<Freezer/>}/>

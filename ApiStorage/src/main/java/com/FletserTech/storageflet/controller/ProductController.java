@@ -148,25 +148,23 @@ public class ProductController {
     }
 
     @GetMapping("/stocks")
-@Operation(summary = "Rota responsável por listar produtos com estoque")
-public ResponseEntity<List<ProductStockDTO>> getProductStock() {
-    List<ProductStockDTO> productStockList = stockService.findAll().stream().map(stock -> {
-        ProductStockDTO dto = new ProductStockDTO();
-        dto.setId(stock.getProduct().getId()); // ID do produto
-        dto.setName(stock.getProduct().getName()); // Nome do produto
-        dto.setPrice(stock.getProduct().getPrice()); // Preço do produto
-        dto.setSellingPrice(stock.getProduct().getSellingPrice()); // Preço de venda do produto
-        dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise()); // Empresa fornecedora
-        dto.setQuantity(stock.getQuantity()); // Quantidade em estoque
-        dto.setAmount(stock.getProduct().getAmount()); // Quantidade total do produto
-        dto.setStockId(stock.getId()); // Adicionando o ID do estoque
-        return dto;
-    }).collect(Collectors.toList());
+    @Operation(summary = "Rota responsável por listar produtos com estoque")
+    public ResponseEntity<List<ProductStockDTO>> getProductStock() {
+        List<ProductStockDTO> productStockList = stockService.findAll().stream().map(stock -> {
+            ProductStockDTO dto = new ProductStockDTO();
+            dto.setId(stock.getProduct().getId()); // ID do produto
+            dto.setName(stock.getProduct().getName()); // Nome do produto
+            dto.setPrice(stock.getProduct().getPrice()); // Preço do produto
+            dto.setSellingPrice(stock.getProduct().getSellingPrice()); // Preço de venda do produto
+            dto.setEnterprise(stock.getProduct().getSupplier().getEnterprise()); // Empresa fornecedora
+            dto.setQuantity(stock.getQuantity()); // Quantidade em estoque
+            dto.setAmount(stock.getProduct().getAmount()); // Quantidade total do produto
+            dto.setStockId(stock.getId()); // Adicionando o ID do estoque
+            return dto;
+        }).collect(Collectors.toList());
 
-    return ResponseEntity.ok(productStockList);
-}
-
-    
+        return ResponseEntity.ok(productStockList);
+    }
 
     @GetMapping("/")
     @Operation(summary = "Rota responsável pelo teste de conexão")

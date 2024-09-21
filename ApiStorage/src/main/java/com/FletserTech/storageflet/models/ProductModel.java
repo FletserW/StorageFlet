@@ -19,11 +19,18 @@ import java.math.BigDecimal;
 @Table(name = "products")
 public class ProductModel {
 
+    public ProductModel(Long productId) {
+        //TODO Auto-generated constructor stub
+    }
+
+     public ProductModel() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
+  @NotEmpty
     private String name;
 
     @NotEmpty

@@ -16,6 +16,15 @@ import lombok.Setter;
 @Table(name = "suppliers")
 public class SupplierModel {
     
+    public SupplierModel(Long supplierId) {
+        //TODO Auto-generated constructor stub
+    }
+
+    
+    public SupplierModel() {
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

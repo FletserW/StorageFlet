@@ -7,7 +7,7 @@ import {
   Truck,
   Settings,
   LogOut,
-  ClipboardPenLine
+  ClipboardPenLine,
 } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
@@ -24,15 +24,13 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
         {/* Logo and Site Name */}
         <div className="flex items-center mb-4">
           <img
-            src="src\assets\logo.png"  // Corrigi a barra invertida para barra normal
+            src="src\assets\logo.png" // Corrigi a barra invertida para barra normal
             alt="Logo"
             className={`transition-all duration-300 ${
               isSidebarOpen ? "w-36 h-36" : "w-10 h-10"
             }`}
           />
         </div>
-      
-
 
         {/* Navigation Links */}
         <nav className="space-y-4">

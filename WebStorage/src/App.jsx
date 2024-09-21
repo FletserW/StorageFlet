@@ -5,7 +5,7 @@ import DashBoard from "./pages/DashBoard"
 import Stock from "./pages/Stock";
 import Freezer from "./pages/Freezer";
 import Supplier from "./pages/Supplier";
-import OrderList from "./pages/OrderList";
+//import OrderList from "./pages/OrderList";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route path="/estoque" element={<Stock/>}/>
         <Route path="/freezer" element={<Freezer/>}/>
         <Route path="/supplier" element={<Supplier/>}/>
-        <Route path="/request" element={<OrderList/>}/>
+        
         <Route path="/login" element={<Login/>}/>
         <Route path="signup" element={<SignUp/>}/>
       </Routes>

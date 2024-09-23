@@ -6,7 +6,7 @@ import Stock from "./pages/Stock";
 import Freezer from "./pages/Freezer";
 import Supplier from "./pages/Supplier";
 <<<<<<< Updated upstream
-//import OrderList from "./pages/OrderList";
+
 =======
 >>>>>>> Stashed changes
 
